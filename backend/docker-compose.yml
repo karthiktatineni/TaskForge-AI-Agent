@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: ai_architect_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: ai_architect_tunnel
+    restart: always
+    command: tunnel --config /etc/cloudflared/config.yaml run
+    volumes:
+      - ./cloudflared.yaml:/etc/cloudflared/config.yaml
+      - C:\Users\karth\.cloudflared\c7035300-77fd-4a7d-8713-b0e10d3eb275.json:/etc/cloudflared/cert.json
+    depends_on:
+      - backend

@@ -1,0 +1,13 @@
+tunnel: c7035300-77fd-4a7d-8713-b0e10d3eb275
+credentials-file: /etc/cloudflared/cert.json
+
+ingress:
+  - hostname: architect-api.tatinenikarthik.online
+    service: http://backend:8000
+    originRequest:
+      noTLSVerify: true
+  - hostname: architect.tatinenikarthik.online
+    service: http://host.docker.internal:3001
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
