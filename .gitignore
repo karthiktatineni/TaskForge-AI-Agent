@@ -47,3 +47,5 @@ yarn-error.log*
 # local data
 backend/data/*.json
 !backend/data/seed.json
+backend/projects/
+backend/metrics.json

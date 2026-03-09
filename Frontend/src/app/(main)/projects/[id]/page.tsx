@@ -295,6 +295,250 @@ const DatabaseTab = ({ project }: { project: Project }) => {
     );
 };
 
+const FilesTab = ({ project }: { project: Project }) => {
+    const outputs = project.outputs;
+    const files = (outputs as any)?.files || [];
+
+    if (files.length === 0) {
+        return (
+            <div className="p-12 glass-panel rounded-2xl text-center border border-[var(--border-primary)]">
+                <Terminal className="w-12 h-12 text-[var(--text-tertiary)]/50 mx-auto mb-4" />
+                <h3 className="text-lg font-bold">No Generated Files</h3>
+                <p className="text-[var(--text-secondary)] mt-2">The AI Architect didn't generate any source code for this project yet.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div className="glass-panel p-6 rounded-2xl border border-[var(--border-primary)] shadow-sm">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <Code className="w-5 h-5 text-brand-500" />
+                    Generated Source Code
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    {files.map((file: any, idx: number) => (
+                        <div key={idx} className="p-4 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] hover:border-brand-300 transition-all flex flex-col h-[300px]">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2 overflow-hidden">
+                                    <FileText className="w-4 h-4 text-brand-400 flex-shrink-0" />
+                                    <span className="font-mono text-[10px] font-bold truncate text-[var(--text-primary)]">{file.path}</span>
+                                </div>
+                                <span className="text-[9px] uppercase font-bold tracking-tighter opacity-50">{file.language}</span>
+                            </div>
+                            <div className="flex-1 bg-[var(--bg-secondary)] rounded-lg p-3 overflow-auto custom-scrollbar border border-[var(--border-secondary)]">
+                                <pre className="text-[10px] font-mono whitespace-pre text-[var(--text-secondary)] leading-relaxed">
+                                    {file.content}
+                                </pre>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const PRDTab = ({ project }: { project: Project }) => {
+    const prd = project.outputs?.prd;
+    if (!prd) return <div className="p-8 text-center text-[var(--text-tertiary)]">PRD not yet generated...</div>;
+
+    return (
+        <div className="space-y-8 animate-fade-in">
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-[var(--border-primary)]">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-[var(--text-primary)]">
+                    <CheckSquare className="w-5 h-5 text-indigo-500" />
+                    Product Requirements
+                </h2>
+                <div className="space-y-6">
+                    <div>
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-2">Overview</h3>
+                        <p className="text-[var(--text-secondary)] leading-relaxed">{prd.overview}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-3">Core Objectives</h3>
+                            <ul className="space-y-2">
+                                {prd.objectives.map((obj, i) => (
+                                    <li key={i} className="flex gap-2 text-sm text-[var(--text-secondary)]">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500 mt-1.5 flex-shrink-0" />
+                                        {obj}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-3">Success Metrics</h3>
+                            <ul className="space-y-2">
+                                {prd.success_metrics.map((metric, i) => (
+                                    <li key={i} className="flex gap-2 text-sm text-[var(--text-secondary)]">
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                                        {metric}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-[var(--border-primary)]">
+                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-brand-500" />
+                    User Stories
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {prd.user_stories.map((story, i) => (
+                        <div key={i} className="p-4 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/50">
+                            <div className="flex justify-between items-start mb-2">
+                                <span className="text-[10px] font-mono font-bold bg-[var(--bg-tertiary)] px-2 py-0.5 rounded uppercase">{story.id}</span>
+                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${getStatusColor(story.priority)}`}>{story.priority}</span>
+                            </div>
+                            <p className="text-sm text-[var(--text-primary)] font-medium leading-snug">
+                                As a <span className="text-brand-500">{story.persona}</span>,
+                                I want to <span className="text-[var(--text-primary)]">{story.action}</span>
+                                so that I can <span className="text-[var(--text-secondary)]">{story.benefit}</span>.
+                            </p>
+                            <div className="mt-4 pt-4 border-t border-[var(--border-secondary)]">
+                                <h4 className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase mb-2">Acceptance Criteria</h4>
+                                <ul className="space-y-1">
+                                    {story.acceptance_criteria.map((ac, j) => (
+                                        <li key={j} className="text-[11px] text-[var(--text-secondary)] flex gap-1.5">
+                                            <div className="w-1 h-1 rounded-full bg-[var(--text-tertiary)] mt-1.5" />
+                                            {ac}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const UIUXTab = ({ project }: { project: Project }) => {
+    const uiux = project.outputs?.uiux_plan;
+    if (!uiux) return <div className="p-8 text-center text-[var(--text-tertiary)]">UI/UX Plan not yet generated...</div>;
+
+    return (
+        <div className="space-y-8 animate-fade-in">
+            <div className="glass-panel p-6 sm:p-8 rounded-2xl border border-[var(--border-primary)]">
+                <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <Component className="w-5 h-5 text-pink-500" />
+                    UI / UX Strategy
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="md:col-span-2">
+                        <h3 className="text-sm font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-2">Design Direction</h3>
+                        <p className="text-[var(--text-secondary)] leading-relaxed">{uiux.design_direction}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {uiux.screens.map((screen, i) => (
+                    <div key={i} className="glass-panel p-6 rounded-2xl border border-[var(--border-primary)]">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold flex items-center gap-2">
+                                <Monitor className="w-4 h-4 text-brand-500" />
+                                {screen.name}
+                            </h3>
+                            <span className="text-[10px] font-mono font-bold opacity-50">{screen.path}</span>
+                        </div>
+                        <p className="text-sm text-[var(--text-secondary)] mb-4">{screen.description}</p>
+
+                        <div className="space-y-4 pt-4 border-t border-[var(--border-secondary)]">
+                            <div>
+                                <h4 className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase mb-2">Key Components</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {screen.components.map((c, j) => (
+                                        <span key={j} className="px-2 py-1 bg-[var(--bg-tertiary)] rounded text-[10px] text-[var(--text-secondary)] border border-[var(--border-secondary)]">{c}</span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase mb-2">Screen States</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {screen.states.map((s, j) => (
+                                        <span key={j} className="px-2 py-0.5 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-full text-[9px] font-bold">{s}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const TasksTab = ({ project }: { project: Project }) => {
+    const tasks = project.outputs?.task_breakdown;
+    if (!tasks) return <div className="p-8 text-center text-[var(--text-tertiary)]">Task breakdown not yet generated...</div>;
+
+    return (
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex justify-between items-end mb-4 px-2">
+                <div>
+                    <h2 className="text-2xl font-bold">Development Roadmap</h2>
+                    <p className="text-[var(--text-secondary)] text-sm mt-1">Total Estimated Effort: <span className="text-brand-500 font-bold">{tasks.total_estimated_hours}h</span></p>
+                </div>
+            </div>
+
+            <div className="space-y-8">
+                {tasks.milestones.map((milestone, i) => (
+                    <div key={i} className="relative pl-8">
+                        {/* Timeline Connector */}
+                        {i < tasks.milestones.length - 1 && (
+                            <div className="absolute left-[3px] top-6 bottom-[-32px] w-0.5 bg-gradient-to-b from-brand-500 to-transparent" />
+                        )}
+                        <div className="absolute left-0 top-1.5 w-2 h-2 rounded-full bg-brand-500 ring-4 ring-brand-500/20" />
+
+                        <div className="glass-panel p-6 rounded-2xl border border-[var(--border-primary)] shadow-sm">
+                            <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="text-[10px] font-bold bg-brand-500 text-white px-2 py-0.5 rounded uppercase">{milestone.id}</span>
+                                        <h3 className="text-lg font-bold">{milestone.title}</h3>
+                                    </div>
+                                    <p className="text-sm text-[var(--text-secondary)]">{milestone.description}</p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <span className="px-3 py-1 bg-[var(--bg-tertiary)] rounded-full text-xs font-semibold text-[var(--text-secondary)] border border-[var(--border-primary)]">
+                                        Estimated: {milestone.estimated_duration}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                {milestone.tasks.map((task, j) => (
+                                    <div key={j} className="group p-4 rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-primary)] hover:border-brand-300 transition-all flex flex-col md:flex-row gap-4 items-start md:items-center">
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center group-hover:bg-brand-50 dark:group-hover:bg-brand-900/20 transition-colors">
+                                            <span className="text-[10px] font-bold font-mono text-[var(--text-tertiary)] group-hover:text-brand-500">{task.id}</span>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-semibold text-[var(--text-primary)]">{task.title}</h4>
+                                            <p className="text-xs text-[var(--text-secondary)] mt-0.5 line-clamp-1">{task.description}</p>
+                                        </div>
+                                        <div className="flex flex-wrap gap-2 items-center">
+                                            <span className="px-2 py-0.5 bg-[var(--bg-secondary)] border border-[var(--border-secondary)] rounded text-[9px] font-bold uppercase text-[var(--text-tertiary)]">{task.category}</span>
+                                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase ${getStatusColor(task.priority)}`}>{task.priority}</span>
+                                            <span className="px-2 py-0.5 bg-brand-50 dark:bg-brand-900/10 text-brand-600 dark:text-brand-400 rounded text-[9px] font-bold">{task.estimated_hours}h</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
 const APITab = ({ project }: { project: Project }) => {
     const api = project.outputs?.api_design;
     if (!api) return <div className="p-8 text-center text-[var(--text-tertiary)]">API design not yet generated...</div>;
@@ -367,9 +611,13 @@ import { getProject } from "@/lib/api";
 // Map of tab IDs to components
 const TAB_COMPONENTS: Record<string, React.FC<{ project: Project }>> = {
     overview: OverviewTab,
+    prd: PRDTab,
     architecture: ArchitectureTab,
     database: DatabaseTab,
     api: APITab,
+    uiux: UIUXTab,
+    tasks: TasksTab,
+    files: FilesTab,
 };
 
 export default function ProjectWorkspacePage() {
@@ -494,6 +742,7 @@ export default function ProjectWorkspacePage() {
 
     const tabs = [
         { id: "overview", label: "Overview", icon: FileText },
+        { id: "files", label: "Generated Code", icon: Terminal },
         { id: "prd", label: "PRD & Stories", icon: CheckSquare },
         { id: "architecture", label: "Architecture", icon: LayoutTemplate },
         { id: "database", label: "Database", icon: Database },
@@ -569,18 +818,13 @@ export default function ProjectWorkspacePage() {
                 <div className="pb-24">
                     {/* Render the dynamically selected active tab */}
                     {activeTab === 'overview' && <OverviewTab project={project} />}
+                    {activeTab === 'prd' && <PRDTab project={project} />}
                     {activeTab === 'architecture' && <ArchitectureTab project={project} />}
                     {activeTab === 'database' && <DatabaseTab project={project} />}
                     {activeTab === 'api' && <APITab project={project} />}
-
-                    {/* Catchall for tabs not yet fully built out */}
-                    {['prd', 'uiux', 'tasks'].includes(activeTab) && (
-                        <div className="glass-panel p-12 text-center rounded-2xl border border-[var(--border-primary)]">
-                            <Code className="w-12 h-12 text-[var(--text-tertiary)]/50 mx-auto mb-4" />
-                            <h3 className="text-lg font-bold">Content Viewer Under Construction</h3>
-                            <p className="text-[var(--text-secondary)] mt-2">The raw data exists for this section, but the specialized UI component is still being built.</p>
-                        </div>
-                    )}
+                    {activeTab === 'uiux' && <UIUXTab project={project} />}
+                    {activeTab === 'tasks' && <TasksTab project={project} />}
+                    {activeTab === 'files' && <FilesTab project={project} />}
                 </div>
             </div>
         </div>

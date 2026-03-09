@@ -5,6 +5,7 @@ from datetime import datetime
 from models.schemas import Project, GenerateProjectRequest, GenerateProjectResponse
 from services.db import get_all_projects, get_project_by_id, create_project, update_project, delete_project
 from services.ai_generator import AIService
+from services.file_manager import save_project_files
 from services.metrics import log_api_request, log_generation
 import time
 
@@ -60,6 +61,10 @@ async def generate_project_background(project_id: str, request: GenerateProjectR
         
         elapsed = time.time() - start_time
         log_generation(True, elapsed)
+        
+        # Save actual physical files to disk
+        if "files" in outputs_dict and outputs_dict["files"]:
+            save_project_files(project_id, outputs_dict["files"])
         
         # Update project with completion
         update_project(project_id, {

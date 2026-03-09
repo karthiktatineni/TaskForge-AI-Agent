@@ -199,6 +199,11 @@ class StackRecommendation(BaseModel):
 # ----------------------------------------------------
 # Complete Project Outputs
 # ----------------------------------------------------
+class FileOutput(BaseModel):
+    path: str
+    content: str
+    language: str
+
 class ProjectOutputs(BaseModel):
     summary: str
     prd: PRDOutput
@@ -209,6 +214,7 @@ class ProjectOutputs(BaseModel):
     task_breakdown: TaskBreakdown
     risks: RiskOutput
     recommended_stack: StackRecommendation
+    files: Optional[List[FileOutput]] = Field(default_factory=list)
 
 # ----------------------------------------------------
 # Project Data Model
