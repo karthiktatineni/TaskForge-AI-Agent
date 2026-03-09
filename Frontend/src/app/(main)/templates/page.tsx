@@ -6,7 +6,7 @@ import {
     Monitor, Tablet, Smartphone,
     Sparkles, ArrowRight, Eye,
     Cpu, Globe, Lock, ShoppingCart,
-    MessageSquare, BarChart3, Palette, FileText
+    MessageSquare, BarChart3, Palette, FileText as FileTextIcon
 } from "lucide-react";
 
 interface Template {
@@ -32,7 +32,7 @@ export default function TemplatesPage() {
         { id: "9", title: "Customer Chat Widget", description: "Floating UI with rich interactive message components.", category: "Mobile", complexity: "Simple", icon: MessageSquare, color: "text-blue-400" },
         { id: "10", title: "Crypto Exchange Terminal", description: "High-density trading interface with live charts.", category: "Dashboard", complexity: "Advanced", icon: BarChart3, color: "text-green-500" },
         { id: "11", title: "Productivity Kanban", description: "Drag and drop board with task detail overlays.", category: "Dashboard", complexity: "Medium", icon: LayoutTemplate, color: "text-amber-500" },
-        { id: "12", title: "Blog Engine Headless", description: "Content management UI for headless CMS users.", category: "Saas", complexity: "Medium", icon: FileText, color: "text-blue-600" },
+        { id: "12", title: "Blog Engine Headless", description: "Content management UI for headless CMS users.", category: "Saas", complexity: "Medium", icon: FileTextIcon, color: "text-blue-600" },
         { id: "13", title: "Fitness Tracking Mobile", description: "Activity rings and health data visualizations.", category: "Mobile", complexity: "Medium", icon: Smartphone, color: "text-red-500" },
         { id: "14", title: "Luxury Real Estate", description: "Image-heavy listings with map-integrated search.", category: "Landing", complexity: "Medium", icon: Globe, color: "text-stone-500" },
         { id: "15", title: "Education LMS Console", description: "Student progress charts and course management.", category: "Dashboard", complexity: "Medium", icon: Monitor, color: "text-indigo-400" },

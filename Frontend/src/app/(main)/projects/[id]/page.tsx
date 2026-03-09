@@ -14,7 +14,7 @@ import { getStatusColor, formatDate } from "@/lib/utils";
 // Subcomponents for the different views
 const OverviewTab = ({ project }: { project: Project }) => {
     const outputs = project.outputs;
-    if (!outputs) return <div className="p-8 text-center text-[var(--text-tertiary)]">Waiting for generation results...</div>;
+    if (!outputs) return null; // Should be handled by parent error state
 
     return (
         <div className="space-y-8 animate-fade-in">
@@ -698,58 +698,99 @@ export default function ProjectWorkspacePage() {
     // Handle case where generation failed
     if (project.status === "completed" && !project.outputs) {
         return (
-            <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-                <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
-                <h2 className="text-2xl font-bold mb-2 text-red-600">Generation Failed</h2>
-                <p className="text-[var(--text-secondary)] mb-6 max-w-md">
-                    {project.description || "The AI Architect encountered an unexpected error during the generation process."}
-                </p>
-                <div className="flex gap-4">
+            <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in max-w-2xl mx-auto">
+                <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center mb-6">
+                    <AlertTriangle className="w-10 h-10 text-red-500" />
+                </div>
+                <h2 className="text-3xl font-black mb-3 text-red-600 tracking-tight">Generation Failed</h2>
+                <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 rounded-2xl p-6 mb-8 text-left">
+                    <p className="text-xs font-bold text-red-500 uppercase tracking-widest mb-2">Technical Error Message</p>
+                    <p className="text-[var(--text-secondary)] font-mono text-xs leading-relaxed break-words">
+                        {project.description || "The AI Architect encountered an unexpected error during the generation process."}
+                    </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                     <button
                         onClick={() => router.push("/projects/new")}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition-colors"
+                        className="flex items-center justify-center gap-2 px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-brand-500/20"
                     >
-                        <RefreshCw className="w-4 h-4" /> Try Again
+                        <RefreshCw className="w-4 h-4" /> Try with a different prompt
                     </button>
                     <button
                         onClick={() => router.push("/projects")}
-                        className="flex items-center gap-2 px-6 py-2.5 bg-[var(--bg-tertiary)] hover:bg-[var(--border-primary)] text-[var(--text-primary)] rounded-xl text-sm font-medium transition-colors"
+                        className="flex items-center justify-center gap-2 px-8 py-3 bg-[var(--bg-tertiary)] hover:bg-[var(--border-primary)] text-[var(--text-primary)] rounded-xl font-bold transition-all"
                     >
-                        Back to Projects
+                        Back to Workspace
                     </button>
                 </div>
-                <p className="mt-8 text-xs font-mono text-[var(--text-tertiary)]">Job ID: {project.id}</p>
+                <p className="mt-12 text-xs font-mono text-[var(--text-tertiary)]">Job ID: {project.id}</p>
             </div>
         );
     }
 
     // If it's still generating, show a dedicated loading view
     if (project.status === "generating" || (project.status === "draft" && !project.outputs)) {
+        const generationLogs = [
+            "Initializing Engineering Agent...",
+            "Consulting architectural patterns...",
+            "Synthesizing PRD and technical specs...",
+            "Designing state machines and entity relationships...",
+            "Architecting high-performance API mesh...",
+            "Calculating development velocity and roadmap...",
+            "Drafting responsive UI/UX screen flows...",
+            "Writing production-ready source code skeleton...",
+            "Validating project integrity and file structures...",
+            "Finalizing project environment..."
+        ];
+
         return (
-            <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-                <div className="relative w-20 h-20 mb-8">
-                    <div className="absolute inset-0 border-4 border-[var(--border-primary)] rounded-full" />
+            <div className="min-h-[600px] flex flex-col items-center justify-center p-8 text-center animate-fade-in max-w-3xl mx-auto">
+                <div className="relative w-24 h-24 mb-10">
+                    <div className="absolute inset-0 border-4 border-[var(--border-primary)] rounded-full animate-pulse" />
                     <div className="absolute inset-0 border-4 border-brand-500 rounded-full border-t-transparent animate-spin" />
-                    <Sparkles className="absolute inset-0 m-auto w-8 h-8 text-brand-500 animate-pulse-soft" />
+                    <Sparkles className="absolute inset-0 m-auto w-10 h-10 text-brand-500 animate-pulse-soft" />
                 </div>
 
-                <h2 className="text-2xl font-bold mb-2">Architecting Your Project...</h2>
-                <p className="text-[var(--text-secondary)] mb-8 max-w-md">Our AI Agent is drafting your PRD, system architecture, database schema, and source code skeleton.</p>
+                <h2 className="text-3xl font-black mb-3 tracking-tight">Building Your Project</h2>
+                <p className="text-[var(--text-secondary)] mb-10 max-w-md mx-auto leading-relaxed">
+                    Our AI Engineering Agent is currently drafting your complete project environment. This usually takes 30-60 seconds.
+                </p>
 
-                <div className="w-full max-w-md bg-[var(--bg-tertiary)] h-2 rounded-full overflow-hidden mb-6">
-                    <div className="h-full bg-brand-500 w-2/3 animate-pulse" />
+                {/* Simulated Agent Terminal */}
+                <div className="w-full bg-[#0d0d12] border border-[var(--border-primary)] rounded-2xl p-6 shadow-2xl mb-10 text-left font-mono">
+                    <div className="flex gap-2 mb-4 border-b border-white/5 pb-3">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500/20 border border-amber-500/50" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/20 border border-emerald-500/50" />
+                        <span className="ml-2 text-[9px] text-white/30 uppercase tracking-[0.2em] font-bold">Agent Process Feed</span>
+                    </div>
+                    <div className="space-y-2.5 h-48 overflow-y-auto custom-scrollbar pr-2">
+                        {generationLogs.map((log, i) => (
+                            <div key={i} className={`flex items-start gap-3 text-[11px] animate-fade-in`} style={{ animationDelay: `${i * 1.2}s` }}>
+                                <span className="text-emerald-500 font-bold shrink-0">✔</span>
+                                <span className={`${i === generationLogs.length - 1 ? 'text-brand-400 animate-pulse' : 'text-white/60'}`}>
+                                    {log}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="flex flex-col items-center gap-4">
-                    <p className="text-xs font-mono text-[var(--text-tertiary)] bg-[var(--bg-secondary)] px-3 py-1 rounded border border-[var(--border-primary)]">
-                        Job ID: {project.id}
-                    </p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="flex items-center gap-2 text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors"
-                    >
-                        <RefreshCw className="w-3 h-3" /> Manually Refresh
-                    </button>
+                <div className="flex flex-col items-center gap-6">
+                    <div className="flex items-center gap-4 px-4 py-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)]">
+                        <Loader2 className="w-4 h-4 text-brand-500 animate-spin" />
+                        <span className="text-xs font-mono text-[var(--text-tertiary)] uppercase tracking-tight">Processing ID: {project.id}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="flex items-center gap-2 text-sm font-black text-brand-500 hover:text-brand-600 transition-all hover:scale-105"
+                        >
+                            <RefreshCw className="w-4 h-4" /> Hard Refresh Session
+                        </button>
+                        <p className="text-[10px] text-[var(--text-tertiary)] italic">Refresh if status hasn't updated in 2 minutes.</p>
+                    </div>
                 </div>
             </div>
         );
