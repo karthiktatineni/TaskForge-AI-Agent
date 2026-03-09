@@ -388,9 +388,11 @@ export default function ProjectWorkspacePage() {
             try {
                 const data = await getProject(id);
                 setProject(data);
+                // Poll if it's still being prepared (draft/generating) and doesn't have outputs yet
+                const isStillWorking = data && (data.status === "generating" || data.status === "draft");
+                const hasNoOutputs = !data?.outputs;
 
-                // If it's still generating, poll again in 3 seconds
-                if (data && data.status === "generating") {
+                if (isStillWorking && hasNoOutputs) {
                     pollInterval = setTimeout(fetchProject, 3000);
                 }
             } catch (error) {
@@ -445,8 +447,36 @@ export default function ProjectWorkspacePage() {
     const tasks = (outputs as any)?.tasks || { phases: [] };
     const technicalPlan = (outputs as any)?.technical_plan || { steps: [] };
 
+    // Handle case where generation failed
+    if (project.status === "completed" && !project.outputs) {
+        return (
+            <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                <AlertTriangle className="w-12 h-12 text-red-500 mb-4" />
+                <h2 className="text-2xl font-bold mb-2 text-red-600">Generation Failed</h2>
+                <p className="text-[var(--text-secondary)] mb-6 max-w-md">
+                    {project.description || "The AI Architect encountered an unexpected error during the generation process."}
+                </p>
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => router.push("/projects/new")}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-sm font-medium transition-colors"
+                    >
+                        <RefreshCw className="w-4 h-4" /> Try Again
+                    </button>
+                    <button
+                        onClick={() => router.push("/projects")}
+                        className="flex items-center gap-2 px-6 py-2.5 bg-[var(--bg-tertiary)] hover:bg-[var(--border-primary)] text-[var(--text-primary)] rounded-xl text-sm font-medium transition-colors"
+                    >
+                        Back to Projects
+                    </button>
+                </div>
+                <p className="mt-8 text-xs font-mono text-[var(--text-tertiary)]">Job ID: {project.id}</p>
+            </div>
+        );
+    }
+
     // If it's still generating, show a dedicated loading view
-    if (project.status === "generating") {
+    if (project.status === "generating" || (project.status === "draft" && !project.outputs)) {
         return (
             <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
                 <Loader2 className="w-12 h-12 text-brand-500 mb-4 animate-spin" />
