@@ -727,13 +727,30 @@ export default function ProjectWorkspacePage() {
     if (project.status === "generating" || (project.status === "draft" && !project.outputs)) {
         return (
             <div className="min-h-[500px] flex flex-col items-center justify-center p-8 text-center animate-fade-in">
-                <Loader2 className="w-12 h-12 text-brand-500 mb-4 animate-spin" />
-                <h2 className="text-2xl font-bold mb-2">Generating Project...</h2>
-                <p className="text-[var(--text-secondary)] mb-6">The AI Architect is crafting your PRD, Database schemas, API endpoints, and system architecture.</p>
-                <div className="w-full max-w-md bg-[var(--bg-tertiary)] h-2 rounded-full overflow-hidden mb-6">
-                    <div className="h-full bg-brand-500 w-1/2 animate-pulse" />
+                <div className="relative w-20 h-20 mb-8">
+                    <div className="absolute inset-0 border-4 border-[var(--border-primary)] rounded-full" />
+                    <div className="absolute inset-0 border-4 border-brand-500 rounded-full border-t-transparent animate-spin" />
+                    <Sparkles className="absolute inset-0 m-auto w-8 h-8 text-brand-500 animate-pulse-soft" />
                 </div>
-                <p className="text-sm font-mono text-[var(--text-tertiary)]">Job ID: {project.id}</p>
+
+                <h2 className="text-2xl font-bold mb-2">Architecting Your Project...</h2>
+                <p className="text-[var(--text-secondary)] mb-8 max-w-md">Our AI Agent is drafting your PRD, system architecture, database schema, and source code skeleton.</p>
+
+                <div className="w-full max-w-md bg-[var(--bg-tertiary)] h-2 rounded-full overflow-hidden mb-6">
+                    <div className="h-full bg-brand-500 w-2/3 animate-pulse" />
+                </div>
+
+                <div className="flex flex-col items-center gap-4">
+                    <p className="text-xs font-mono text-[var(--text-tertiary)] bg-[var(--bg-secondary)] px-3 py-1 rounded border border-[var(--border-primary)]">
+                        Job ID: {project.id}
+                    </p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="flex items-center gap-2 text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors"
+                    >
+                        <RefreshCw className="w-3 h-3" /> Manually Refresh
+                    </button>
+                </div>
             </div>
         );
     }

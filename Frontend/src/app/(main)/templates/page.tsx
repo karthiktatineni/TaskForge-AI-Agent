@@ -6,7 +6,7 @@ import {
     Monitor, Tablet, Smartphone,
     Sparkles, ArrowRight, Eye,
     Cpu, Globe, Lock, ShoppingCart,
-    MessageSquare, BarChart3, Palette
+    MessageSquare, BarChart3, Palette, FileText
 } from "lucide-react";
 
 interface Template {
@@ -53,7 +53,7 @@ const TEMPLATES: Template[] = [
 ];
 
 // Helper to allow simple icons
-const FileText = ({ className }: { className: string }) => <LayoutTemplate className={className} />;
+
 
 export default function TemplatesPage() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -99,8 +99,8 @@ export default function TemplatesPage() {
                             key={cat}
                             onClick={() => setSelectedCategory(cat)}
                             className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap ${selectedCategory === cat
-                                    ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20"
-                                    : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)] hover:border-[var(--text-tertiary)]"
+                                ? "bg-brand-500 text-white shadow-lg shadow-brand-500/20"
+                                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)] hover:border-[var(--text-tertiary)]"
                                 }`}
                         >
                             {cat}
@@ -120,8 +120,8 @@ export default function TemplatesPage() {
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="text-xl font-bold text-[var(--text-primary)]">{template.title}</h3>
                                 <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md ${template.complexity === 'Advanced' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30' :
-                                        template.complexity === 'Medium' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30' :
-                                            'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30'
+                                    template.complexity === 'Medium' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30' :
+                                        'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30'
                                     }`}>
                                     {template.complexity}
                                 </span>

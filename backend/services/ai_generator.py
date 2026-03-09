@@ -2,6 +2,7 @@ import os
 import json
 import asyncio
 import requests
+import re
 from groq import Groq
 from models.schemas import ProjectOutputs
 
@@ -147,9 +148,9 @@ Always include:
 The code should be professional, clean, and IMMEDIATELY functional.
 
 
-Make sure to return valid JSON with no markdown block formatting enclosing the output (i.e. NO ```json).
-If you cannot avoid markdown wrappers, make sure it is exactly ```json at the start and ``` at the end.
-Do not include any text before or after the JSON.
+Make sure to return valid JSON with no markdown block formatting.
+The output MUST be a single JSON object. Do not include any conversational text or explanations.
+Check all commas and quotes for JSON compliance.
 """
 
         user_message = f"""
@@ -222,13 +223,22 @@ Additional Context:
 
         # Clean output and parse
         try:
+            # Deep cleaning: Find the first { and last }
             output_text = output_text.strip()
-            if output_text.startswith("```json"):
-                output_text = output_text[7:]
-            if output_text.endswith("```"):
-                output_text = output_text[:-3]
-                
-            json_dict = json.loads(output_text.strip())
+            
+            # Remove potential markdown wrappers
+            if "```" in output_text:
+                json_match = re.search(r"(\{.*\})", output_text, re.DOTALL)
+                if json_match:
+                    output_text = json_match.group(1)
+                else:
+                    # Fallback cleanup
+                    output_text = output_text.replace("```json", "").replace("```", "").strip()
+            
+            # Simple syntax fixes
+            output_text = output_text.strip()
+            
+            json_dict = json.loads(output_text)
             
             # Validate with Pydantic
             validated_outputs = ProjectOutputs(**json_dict)
@@ -236,5 +246,14 @@ Additional Context:
             
         except Exception as parse_err:
             print(f"Error parsing or validating JSON output: {str(parse_err)}")
-            print(f"Raw output: {output_text[:500]}...")
+            # Try a second attempt if it's just a trailing comma
+            try:
+                # Remove trailing commas before closing braces/brackets
+                cleaned_text = re.sub(r",\s*([\]}])", r"\1", output_text)
+                json_dict = json.loads(cleaned_text)
+                return ProjectOutputs(**json_dict)
+            except:
+                print(f"Second parsing attempt also failed.")
+            
+            print(f"Raw output: {output_text[:1000]}...")
             raise parse_err
